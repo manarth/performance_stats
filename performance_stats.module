@@ -1,0 +1,69 @@
+<?php
+
+/**
+ * Implementation of hook_menu().
+ */
+function performance_stats_menu() {
+  $items = array();
+  $items['admin/config/development/performance_stats'] = array(
+    'title' => 'Performance stats',
+    'page callback' => 'performance_stats_page',
+    'access arguments' => array('administer site configuration'),
+    'description' => 'blah.',
+  );
+  return $items;
+}
+
+function performance_stats_page() {
+  drupal_add_css(drupal_get_path('module', 'performance_stats') . '/performance_stats.css');
+  drupal_add_js("https://www.google.com/jsapi", array("external" => TRUE));
+  drupal_add_js(drupal_get_path('module', 'performance_stats') . '/performance_stats.js', array('cache' => FALSE));
+
+  $setting = array('performance_stats' => array());
+
+  if (function_exists('apc_cache_info')) {
+    $apc_opcode = apc_cache_info('opcode', 1);
+    $apc_info = apc_sma_info();
+
+    $setting['performance_stats'][] = array(
+      'title' => 'APC: Memory Usage',
+      'type' => 'pie',
+      'name' => 'apc_free',
+      'data' => array(
+        'Used' => round($apc_opcode['mem_size'] / pow(1024, 2), 2),
+        'Free' => round($apc_info['avail_mem'] / pow(1024, 2), 2),
+      ),
+      'columns' => array(
+        'string' => 'Usage',
+        'number' => 'Mb',
+      )
+    );
+    $setting['performance_stats'][] = array(
+      'title' => 'APC: Hits & Misses',
+      'type' => 'column',
+      'name' => 'apc_hitmiss',
+      'options' => array(
+        'legend' => 'none',
+      ),
+      'data' => array(
+        'Hits' => $apc_opcode['num_hits'],
+        'Misses' => $apc_opcode['num_misses'],
+      ),
+      'columns' => array(
+        'string' => 'Usage',
+        'number' => 'Mb',
+      )
+    );
+  }
+
+  drupal_add_js($setting, 'setting');
+
+  $output = '<div id="charts"></div>';
+  return $output;
+}
+
+function format_bytes($bytes) {
+  $pow = 2;
+  $bytes /= pow(1024, $pow);
+  return number_format($bytes, 2);
+}
