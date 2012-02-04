@@ -10,7 +10,7 @@
         this.chart_info = chart_info;
         this.options = {
           'title': this.chart_info.title,
-          'width': 500,
+          'width': 440,
           'height': 300
         };
         if (this.chart_info.options != null) {

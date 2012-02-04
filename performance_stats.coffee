@@ -3,7 +3,7 @@
     constructor: (@chart_element, @chart_info) ->
       @options = {
         'title': @chart_info.title,
-        'width': 500,
+        'width': 440,
         'height': 300
       }
 
