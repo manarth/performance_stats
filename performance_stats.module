@@ -21,11 +21,23 @@ function performance_stats_page() {
 
   $setting = array('performance_stats' => array());
 
+  $stats = module_invoke_all('performance_stats');
+  $setting['performance_stats'] = $stats;
+  drupal_add_js($setting, 'setting');
+
+  $output = '<div id="charts"></div>';
+  return $output;
+}
+
+/**
+ * Implementation of hook_performance_stats.
+ */
+function performance_stats_performance_stats() {
+  $stats = array();
   if (function_exists('apc_cache_info')) {
     $apc_opcode = apc_cache_info('opcode', 1);
     $apc_info = apc_sma_info();
-
-    $setting['performance_stats'][] = array(
+    $stats[] = array(
       'title' => 'APC: Memory Usage',
       'type' => 'pie',
       'name' => 'apc_free',
@@ -38,7 +50,7 @@ function performance_stats_page() {
         'number' => 'Mb',
       )
     );
-    $setting['performance_stats'][] = array(
+    $stats[] = array(
       'title' => 'APC: Hits & Misses',
       'type' => 'column',
       'name' => 'apc_hitmiss',
@@ -56,10 +68,48 @@ function performance_stats_page() {
     );
   }
 
-  drupal_add_js($setting, 'setting');
+  if (class_exists('Redis')) {
+    $redis = new Redis();
+    $redis_host = variable_get('redis_client_host', '127.0.0.1');
+    $redis_port = variable_get('redis_client_port', 6379);
+    $redis->connect($redis_host, $redis_port);
 
-  $output = '<div id="charts"></div>';
-  return $output;
+    $redis_info = $redis->info();
+    $redis_config = $redis->config('GET', '*');
+
+    $stats[] = array(
+      'title' => 'Redis: Memory Usage',
+      'type' => 'pie',
+      'name' => 'redis_free',
+      'data' => array(
+        'Used' => round($redis_info['used_memory'] / pow(1024, 2), 2),
+        'Free' => round($redis_config['maxmemory'] / pow(1024, 2), 2),
+      ),
+      'columns' => array(
+        'string' => 'Usage',
+        'number' => 'Mb',
+      )
+    );
+
+    $stats[] = array(
+      'title' => 'Redis: Hits & Misses',
+      'type' => 'column',
+      'name' => 'redis_hitmiss',
+      'options' => array(
+        'legend' => 'none',
+      ),
+      'data' => array(
+        'Hits' => $redis_info['keyspace_hits'],
+        'Misses' => $redis_info['keyspace_misses'],
+      ),
+      'columns' => array(
+        'string' => 'Usage',
+        'number' => 'GETs',
+      )
+    );
+  }
+
+  return $stats;
 }
 
 function format_bytes($bytes) {
