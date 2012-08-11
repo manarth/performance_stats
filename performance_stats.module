@@ -52,10 +52,3 @@ function performance_stats_page() {
   $output = '<div id="charts"></div>';
   return $output;
 }
-
-
-function format_bytes($bytes) {
-  $pow = 2;
-  $bytes /= pow(1024, $pow);
-  return number_format($bytes, 2);
-}
