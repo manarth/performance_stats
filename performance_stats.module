@@ -5,7 +5,7 @@
  */
 function performance_stats_menu() {
   $items = array();
-  $items['admin/config/development/performance_stats'] = array(
+  $items['admin/reports/performance_stats'] = array(
     'title' => 'Performance stats',
     'page callback' => 'performance_stats_page',
     'access arguments' => array('administer site configuration'),
