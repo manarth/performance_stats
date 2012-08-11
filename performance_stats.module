@@ -9,7 +9,7 @@
 
 
 /**
- * Implementation of hook_menu().
+ * Implements hook_menu().
  */
 function performance_stats_menu() {
   $items = array();
@@ -44,7 +44,7 @@ function performance_stats_page() {
 }
 
 /**
- * Implementation of hook_performance_stats.
+ * Implements hook_performance_stats.
  */
 function performance_stats_performance_stats() {
   $stats = array();
