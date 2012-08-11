@@ -14,17 +14,23 @@ function performance_stats_menu() {
   return $items;
 }
 
+/**
+ * Page callback for the reports page.
+ */
 function performance_stats_page() {
   drupal_add_css(drupal_get_path('module', 'performance_stats') . '/performance_stats.css');
   drupal_add_js("https://www.google.com/jsapi", array("external" => TRUE));
   drupal_add_js(drupal_get_path('module', 'performance_stats') . '/performance_stats.js', array('cache' => FALSE));
 
-  $setting = array('performance_stats' => array());
-
+  // All stats displayed on the page are provided through implementations of
+  // hook_performance_stats().
   $stats = module_invoke_all('performance_stats');
-  $setting['performance_stats'] = $stats;
+  $setting = array(
+    'performance_stats' => $stats,
+  );
   drupal_add_js($setting, 'setting');
 
+  // Provide an empty div to be populated by JavaScsript.
   $output = '<div id="charts"></div>';
   return $output;
 }
