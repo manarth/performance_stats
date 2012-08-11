@@ -10,6 +10,8 @@
  */
 function performance_stats_performance_stats() {
   $stats = array();
+
+  // Get APC usage.
   if (function_exists('apc_cache_info')) {
     $apc_opcode = apc_cache_info('opcode', 1);
     $apc_info = apc_sma_info();
@@ -39,11 +41,13 @@ function performance_stats_performance_stats() {
       ),
       'columns' => array(
         'string' => 'Usage',
-        'number' => 'Mb',
+        'number' => 'Count',
       )
     );
   }
 
+
+  // Get Redis usage.
   if (class_exists('Redis')) {
     $redis = new Redis();
     $redis_host = variable_get('redis_client_host', '127.0.0.1');
