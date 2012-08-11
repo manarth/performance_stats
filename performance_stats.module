@@ -9,7 +9,7 @@ function performance_stats_menu() {
     'title' => 'Performance stats',
     'page callback' => 'performance_stats_page',
     'access arguments' => array('administer site configuration'),
-    'description' => 'blah.',
+    'description' => 'View APC and Redis memory-usage information.',
   );
   return $items;
 }
