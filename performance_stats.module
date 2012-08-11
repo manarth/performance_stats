@@ -43,12 +43,18 @@ function performance_stats_page() {
   // All stats displayed on the page are provided through implementations of
   // hook_performance_stats().
   $stats = module_invoke_all('performance_stats');
-  $setting = array(
-    'performance_stats' => $stats,
-  );
-  drupal_add_js($setting, 'setting');
 
-  // Provide an empty div to be populated by JavaScsript.
-  $output = '<div id="charts"></div>';
+  if (!empty($stats)) {
+    $setting = array(
+      'performance_stats' => $stats,
+    );
+    drupal_add_js($setting, 'setting');
+
+    // Provide an empty div to be populated by JavaScsript.
+    $output = '<div id="charts"></div>';
+  }
+  else {
+    $output = '<p>' . t('No performance-reports available. Enable the APC or Redis extensions.') . '</p>';
+  }
   return $output;
 }
