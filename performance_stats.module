@@ -1,4 +1,12 @@
 <?php
+/**
+ * @file
+ * Performance Stats module.
+ *
+ * The Performance Stats module reports the memory-usage of APC and Redis,
+ * allowing them to be effectively tuned.
+ */
+
 
 /**
  * Implementation of hook_menu().
