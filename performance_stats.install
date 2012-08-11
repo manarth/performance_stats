@@ -1,0 +1,30 @@
+<?php
+/**
+ * @file
+ * Requirements definition for the performance stats module.
+ */
+
+
+/**
+ * Implements hook_requirements().
+ */
+function performance_stats_requirements($phase) {
+  $requirements = array();
+
+  if ($phase == 'runtime') {
+    // Raise a warning if there aren't any reports available (for example, if
+    // neither APC nor Redis are enabled).
+    $stats = module_invoke_all('performance_stats');
+
+    if (empty($stats)) {
+      $requirements['performance_stats_missing'] = array(
+        'title' => t('Performance stats'),
+        'value' => t('Missing.'),
+        'description' => t('No performance-stats reports are available. Enable the APC or Redis extensions.'),
+        'severity' => REQUIREMENT_WARNING,
+      );
+    }
+  }
+
+  return $requirements;
+}
